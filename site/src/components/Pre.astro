@@ -1,0 +1,6 @@
+---
+import styles from './code.module.css'
+const { class: _, style: __, ...props } = Astro.props
+---
+
+<pre {...props} class:list={[styles.code]}><slot /></pre>

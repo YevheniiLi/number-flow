@@ -1,0 +1,69 @@
+---
+layout: './_Examples.astro'
+title: 'NumberFlow Examples'
+description: 'Ready-made examples of common patterns to get you started with NumberFlow.'
+---
+export { getStaticPaths } from '@/lib/framework'
+import { DemoTitle } from '@/components/Demo'
+import Activity from './_Activity'
+import ActivityCode from './_Activity/Example?raw'
+import Slider from './_Slider'
+import SliderCode from './_Slider/Example?raw'
+import Input from './_Input'
+import InputCode from './_Input/Example?raw'
+// import Countdown from './_Countdown'
+// import CountdownCode from './_Countdown/Example?raw'
+// import ColoredTrends from './_ColoredTrends'
+// import ColoredTrendsCode from './_ColoredTrends/Example?raw'
+import FramerMotionLayoutAnimations from './_FramerMotion'
+import FramerMotionLayoutAnimationsCode from './_FramerMotion/Example?raw'
+import Code from '@/components/Code.astro';
+
+## Input
+
+<Input client:visible>
+<Code code={InputCode} lang="tsx" />
+</Input>
+
+## Activity
+
+<Activity client:visible>
+<Code code={ActivityCode} lang="tsx" />
+</Activity>
+
+## Slider
+
+<Slider client:visible>
+<Code code={SliderCode} lang="tsx" />
+</Slider>
+
+{/*
+## Countdown
+
+<Countdown client:visible>
+<Code code={CountdownCode} lang="tsx" />
+</Countdown>
+*/}
+
+{/* ## Colored trends
+
+By storing the previous value,
+we can add a simple animation to indicate whether numbers are increasing/decreasing:
+
+<ColoredTrends client:visible>
+<Code code={ColoredTrendsCode} lang="tsx" />
+</ColoredTrends> */}
+
+## Framer Motion
+
+NumberFlow was designed to integrate with [Framer Motion layout animations](https://www.framer.com/motion/layout-animations/).
+You can use a `{ type: 'spring', duration: 0.9, bounce: 0 }` transition to match NumberFlow's default transform timing:
+
+<FramerMotionLayoutAnimations client:visible>
+<Code code={FramerMotionLayoutAnimationsCode} lang="tsx" />
+</FramerMotionLayoutAnimations>
+
+**Note:** whenever `NumberFlow` is used within a layout animation it must be (or be in) a
+[`motion` component](https://www.framer.com/motion/component/#custom-components) with the
+[`layout layoutRoot`](https://www.framer.com/motion/layout-animations/###item-is-performing-unwanted-layout-animations-as-surrounding-content-changes)
+props.

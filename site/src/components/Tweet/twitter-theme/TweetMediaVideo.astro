@@ -1,0 +1,27 @@
+---
+import type { MediaAnimatedGif, MediaVideo } from '../api/index.js'
+import { type EnrichedQuotedTweet, type EnrichedTweet, getMediaUrl, getMp4Video } from '../utils.js'
+import mediaStyles from './tweet-media.module.css'
+import Video from './TweetMediaVideo'
+
+interface Props {
+	autoplay?: boolean
+	tweet: EnrichedTweet | EnrichedQuotedTweet
+	media: MediaAnimatedGif | MediaVideo
+}
+
+const { media, autoplay } = Astro.props
+const mp4Video = getMp4Video(media)
+---
+
+<Video
+	className={mediaStyles.image}
+	poster={getMediaUrl(media, 'small')}
+	autoPlay={autoplay}
+	client:load
+	playsInline
+	loop
+	muted
+	src={mp4Video?.url}
+	preload="metadata"
+/>

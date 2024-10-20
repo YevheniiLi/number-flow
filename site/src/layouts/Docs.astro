@@ -1,0 +1,30 @@
+---
+import Layout from '@/layouts/Layout.astro'
+import type { MDXLayoutProps } from 'astro'
+import TOC from '@/components/TOC'
+import Supported from '@/components/Supported'
+import type { ComponentProps } from 'astro/types'
+
+type Props = ComponentProps<typeof Layout> & {
+	articleClass?: string
+	headings: MDXLayoutProps<{}>['headings']
+}
+
+const { headings, articleClass, ...props } = Astro.props
+---
+
+<Layout {...props}>
+	<Supported transition:persist="supported" client:only="react" />
+	<slot name="hero" />
+	<div
+		class="contents xl:container xl:grid xl:max-w-7xl xl:grid-cols-[1fr_auto_1fr] xl:items-start"
+	>
+		<TOC client:load className="~top-6/10 sticky max-xl:hidden" {headings} />
+		<article class="container max-w-2xl">
+			<div class:list={['prose prose-zinc dark:prose-invert', articleClass]}>
+				<slot />
+			</div>
+			<slot name="footer" />
+		</article>
+	</div>
+</Layout>

@@ -1,0 +1,146 @@
+---
+import '@/assets/main.css'
+import preview from '@/assets/preview.png'
+import { getImage } from 'astro:assets'
+import pkg from '/../packages/number-flow/package.json'
+// import FrameworkMenu from '@/components/FrameworkMenu'
+import Link from '@/components/Link.astro'
+import Nav from '@/components/Nav.astro'
+// import { AstroFont } from 'astro-font'
+// import * as path from 'node:path'
+import { ViewTransitions } from 'astro:transitions'
+import { isActive } from '@/lib/url'
+import { getFramework } from '@/lib/framework'
+
+const frameworkId = getFramework(Astro.params)
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site)
+
+const previewOptimized = await getImage({ src: preview, format: 'png' })
+const image = import.meta.env.URL
+	? new URL(previewOptimized.src, import.meta.env.URL)
+	: previewOptimized.src
+
+type Props = {
+	title: string
+	description: string
+}
+
+const { title, description } = Astro.props
+
+const app = {
+	'@context': 'https://schema.org',
+	'@type': 'WebSite',
+	name: 'Number Flow',
+	alternateName: ['number-flow'],
+	url: Astro.site
+}
+---
+
+<html
+	lang="en"
+	data-framework={frameworkId || undefined}
+	class="text-primary min-h-screen scroll-pt-10 overflow-x-hidden bg-white antialiased motion-safe:scroll-smooth dark:bg-zinc-950"
+>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="shortcut icon" href="/favicon.ico" />
+		<meta name="twitter:creator" content="@mbarvian" />
+		<meta property="og:type" content="article" />
+		<meta property="og:image" content={image} />
+		<meta property="og:site_name" content="NumberFlow" />
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta property="twitter:image" content={image} />
+		<meta name="generator" content={Astro.generator} />
+		<title>{title}</title>
+		<!-- <AstroFont
+			config={[
+				{
+					name: 'Inter',
+					src: [
+						{
+							weight: '100 900',
+							style: 'normal',
+							path: path.join(process.cwd(), 'public', 'fonts', 'Inter-roman-latin.var.woff2')
+						}
+					],
+					preload: true,
+					display: 'block', // for View Transitions
+					cssVariable: 'font-inter',
+					fallback: 'sans-serif'
+				}
+			]}
+		/> -->
+		<link rel="canonical" href={canonicalURL} />
+		<meta property="og:title" content={title} />
+		<meta name="twitter:title" content={title} />
+		<meta name="description" content={description} />
+		<meta property="og:description" content={description} />
+		<meta name="twitter:description" content={description} />
+		<script type="application/ld+json" is:inline set:html={JSON.stringify(app)} />
+
+		<ViewTransitions />
+	</head>
+	<body class="~pt-12/28 ~pb-40/56">
+		<div class="container whitespace-nowrap text-center">
+			{
+				isActive('/', Astro.url) ? (
+					<h1 class="font-medium">
+						<span class="inline-block">NumberFlow</span>
+						<span class="text-muted text-sm font-medium">v{pkg.version}</span>
+					</h1>
+				) : (
+					<Link className="inline-block font-medium" href="/">
+						NumberFlow
+					</Link>
+				)
+			}
+			{
+				/*
+				frameworkId && (
+					<>
+						&nbsp;for
+						<FrameworkMenu
+							className="ml-0 relative top-[.1875rem]"
+							url={Astro.url}
+							value={frameworkId}
+							client:load
+						/>
+					</>
+				)
+			 */
+			}
+		</div>
+		<Nav />
+
+		<main class="overflow-x-clip">
+			<slot />
+		</main>
+	</body>
+</html>
+
+<style is:global>
+	/* Disable default view transitions for root */
+	::view-transition-group(root),
+	::view-transition-image-pair(root),
+	::view-transition-old(root),
+	::view-transition-new(root) {
+		animation: none;
+	}
+</style>
+
+<script>
+	// Disable smooth scroll when transitioning, which also fixes anchor links for some reason:
+	document.addEventListener('astro:before-swap', (event) => {
+		event.newDocument.documentElement.style.scrollBehavior = 'auto'
+
+		document.addEventListener(
+			'astro:after-swap',
+			() => {
+				document.documentElement.style.scrollBehavior = ''
+			},
+			{ once: true }
+		)
+	})
+</script>

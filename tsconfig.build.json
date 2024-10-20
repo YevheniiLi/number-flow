@@ -1,0 +1,12 @@
+{
+	"compilerOptions": {
+		// Stricter linting during builds:
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		// "exactOptionalPropertyTypes": true,
+		"allowUnreachableCode": false,
+		"allowUnusedLabels": false,
+		"stripInternal": true,
+		"noEmitOnError": true
+	}
+}

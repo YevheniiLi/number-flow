@@ -1,0 +1,27 @@
+---
+import styles from './code.module.css'
+import { Code as AstroCode } from 'astro:components'
+import theme from '/highlighter-theme.json'
+import type { ComponentProps } from 'astro/types'
+
+export type Props = ComponentProps<typeof AstroCode> & {
+	firstLine?: string
+}
+const { code: _code, inline, firstLine, ...props } = Astro.props
+
+// Clean up code a little bit:
+const code = _code
+	.split('\n')
+	// Remove prettier-ignore comments:
+	.filter((line) => !/^\s*\/\/ prettier-ignore\s*$/.test(line))
+
+if (firstLine) code.unshift(firstLine)
+---
+
+<AstroCode
+	{...props}
+	code={code.join('\n')}
+	{inline}
+	class:list={[!inline && styles.code]}
+	theme={theme as any}
+/>

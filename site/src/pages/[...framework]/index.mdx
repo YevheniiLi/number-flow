@@ -1,0 +1,161 @@
+---
+layout: './_Home.astro'
+title: NumberFlow - Transition and format numbers
+description: A React component to transition & format numbers. Dependency-free. Built on web standards. Accessible. Customizable.
+---
+import Pre from '@/components/Pre.astro';
+import NumberFlow from '@number-flow/react'
+import TimingsDemo from './_demos/Timings'
+import IsolateDemo from './_demos/Isolate'
+import TabularNumsDemo from './_demos/TabularNums'
+import TrendDemo from './_demos/Trend'
+import Meta from '@/components/Meta.astro'
+import Type from '@/components/Type.astro'
+import Union from '@/components/Union.astro'
+import Link from '@/components/Link.astro'
+export { getStaticPaths } from '@/lib/framework'
+export const components = {a: Link, pre: Pre}
+
+## Basic usage
+
+<div className='xl:pre-first-line:hidden first:*:mt-0'>
+```jsx
+// Basic usage
+import NumberFlow from '@number-flow/react'
+
+<NumberFlow
+	value={value}
+	format={{ notation: 'compact' }} // Intl.NumberFormat options
+	locales="en-US" // Intl.NumberFormat locales
+/>
+```
+</div>
+
+See [MDN's `Intl.NumberFormat` reference](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat/NumberFormat#parameters) for a full list of `locales` and `format` options.
+
+## Transitions
+
+<h3 className="sr-only">Timings</h3>
+
+The default animation timings can be customized via props that accept [`EffectTiming`](https://developer.mozilla.org/en-US/docs/Web/API/AnimationEffect/getTiming#return_value) objects:
+
+<TimingsDemo client:visible defaultValue='code'>
+```jsx
+<NumberFlow
+	// Used for layout-related transforms:
+	transformTiming={{ duration: 700, easing: 'linear(...)' }}
+	// Used for the digit spin animations.
+	// Will fall back to `transformTiming` if unset:
+	spinTiming={{ duration: 700, easing: 'linear(...)' }}
+	// Used for fading in/out characters:
+	opacityTiming={{ duration: 350, easing: 'ease-out' }}
+/>
+```
+</TimingsDemo>
+
+For spring-based easings, I'd recommend [Kevin Grajeda's generator](https://www.kvin.me/css-springs)
+or [easing.dev](https://www.easing.dev/).
+
+<h3>
+	<code>trend<Type>: <Union types={["boolean", "'increasing'", "'decreasing'"]} /></Type></code>
+	<Meta>Default: `true`</Meta>
+</h3>
+
+Controls the direction of the digits.
+
+- `true:` The digits go up if the number increases, and down if the number decreases.
+- `false:` Ignores the trend of the number; each digit goes up if it increases and down if it decreases. This can be useful if you
+want to animate number changes without conveying an overall increase or decrease ([example](https://x.com/pontusab/status/1825941664189526067)).
+- `"increasing":` The digits always go up.
+- `"decreasing":` The digits always go down.
+
+<TrendDemo client:visible />
+
+<h3>
+	<code>isolate<Type>: boolean</Type></code>
+	<Meta>Default: `false`</Meta>
+</h3>
+
+If `isolate` is set, `<NumberFlow>`'s transitions are isolated from any other layout changes
+that may occur in the same update. This can prevent potentially unwanted animations:
+
+<IsolateDemo client:visible />
+
+<h3>
+	<code>animated<Type>: boolean</Type></code>
+	<Meta>Default: `true`</Meta>
+</h3>
+
+Can be set to `false` to disable all animations and finish any current ones.
+See the [input example](/examples/#input) for a usage scenario.
+
+<h3>
+	<code>willChange<Type>: boolean</Type></code>
+	<Meta>Default: `false`</Meta>
+</h3>
+
+If set, NumberFlow applies [`will-change` properties](https://developer.mozilla.org/en-US/docs/Web/CSS/will-change) to relevant elements.
+This can be useful if:
+* Your number is guaranteed to change frequently
+* You experience text misalignment when a transition completes
+
+Note that "excessive use of `will-change` will result in excessive memory use" (source: [MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/will-change)).
+
+<h3 id="respect-motion-preference">
+	<code>respectMotionPreference<Type>: boolean</Type></code>
+	<Meta>Default: `true`</Meta>
+</h3>
+
+Can be set to `false` to animate regardless of the user's reduced motion preference.
+
+### <code>onAnimationsStart<Type>: () => void</Type></code>
+
+Triggered when update animations start. Not to be confused with the built-in `onAnimationStart`, which
+would trigger for animations on the `<NumberFlow>` element itself.
+
+### <code>onAnimationsFinish<Type>: () => void</Type></code>
+
+Triggered when update animations finish.
+
+## Styling
+
+There's some CSS properties you can use to style the component:
+
+<h3>
+	<code>{'--'}number-flow-mask-[height|width]<Type>: {'<length>'}</Type></code>
+	<Meta>Default: `.25em` | `.5em`</Meta>
+</h3>
+
+These adjust the height and width of the gradient fade-out masks at the edges of the number.
+`--number-flow-mask-height` also gets used as the top and bottom padding for the number.
+
+<h3>
+	<code>{'--'}number-flow-char-height<Type>: {'<length>'}</Type></code>
+	<Meta>Default: `1em`</Meta>
+</h3>
+
+Sets the height of each character. This can be used to adjust the vertical 
+spacing between numbers.
+
+### <code>font-variant-numeric<span className="text-muted">:</span> tabular-nums</code>
+
+Ensures all numbers are the same width, which can prevent digits from shifting during transitions.
+See [MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant-numeric#numeric-spacing-values) for more information.
+
+{/* <TabularNumsDemo client:visible /> */}
+
+## Hooks
+
+### <code>useCanAnimate(opts<Type>?: {'{'} respectMotionPreference?: boolean {'}'}</Type>)<Type>: boolean</Type></code>
+
+Returns `true` if NumerFlow can animate, i.e. the browser supports the [required features](https://caniuse.com/mdn-css_types_mod)
+and (optionally) the user is [okay with motion](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion).
+See the [Framer Motion example](/examples#framer-motion) for a usage scenario.
+
+## Limitations
+
+* [Scientific](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat/NumberFormat#scientific) and [engineering](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat/NumberFormat#engineering) notations aren't supported
+* Selected text inside the number will not respect color changes from `::selection`, if any
+* Backgrounds and borders on `<NumberFlow>` won't scale smoothly during transitions. I'd recommend using
+Framer Motion for these, as it's more composable
+than any built-in solution could be. See the Framer Motion layout animations [example](/examples#framer-motion).

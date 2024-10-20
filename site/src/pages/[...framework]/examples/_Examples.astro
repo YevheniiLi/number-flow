@@ -1,0 +1,41 @@
+---
+import DocsLayout from '@/layouts/Docs.astro'
+import type { MDXLayoutProps } from 'astro'
+import { ArrowUpRight } from 'lucide-react'
+
+type Props = MDXLayoutProps<{
+	title: string
+	description: string
+}>
+
+const { frontmatter, headings } = Astro.props
+---
+
+<DocsLayout
+	title={frontmatter.title}
+	description={frontmatter.description}
+	articleClass="[&>section:first-child>h2:first-child]:sr-only"
+	{headings}
+>
+	<header slot="hero" class="~mb-12/24 ~mt-4/6 container max-w-2xl text-center">
+		<h1 class="~text-3xl/5xl font-semibold tracking-tight">Examples</h1>
+		<div class="~text-base/lg ~mt-4/6 prose prose-muted dark:prose-invert text-pretty">
+			<p>Ready-made examples of common patterns to get you started.</p>
+		</div>
+		<div class="~mt-6/8 flex w-full flex-wrap items-stretch justify-center gap-3">
+			<a href="https://codesandbox.io/p/sandbox/r47dcw" target="_blank" class="btn btn-primary">
+				Open sandbox
+				<ArrowUpRight className="size-4" />
+			</a>
+			<a
+				href="https://github.com/barvian/number-flow/discussions/new?category=example-request"
+				target="_blank"
+				class="btn btn-secondary"
+			>
+				Request an example
+				<ArrowUpRight className="size-4" />
+			</a>
+		</div>
+	</header>
+	<slot />
+</DocsLayout>
